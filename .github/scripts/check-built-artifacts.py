@@ -9,14 +9,33 @@ import zipfile
 from pathlib import Path
 
 FORBIDDEN_SUBSTRINGS = (
+    "/.github/",
+    "/.git/",
     "/.playwright-mcp/",
+    "/.pytest_cache/",
+    "/.ruff_cache/",
     "/.stitch/",
-    "/out/",
-    "/manual/",
+    "/__pycache__/",
+    "/demo/",
+    "/docs/",
+    "/dogfood_artifacts/",
     "/explainer-video/",
+    "/examples/",
+    "/manual/",
+    "/out/",
 )
 
 FORBIDDEN_SUFFIXES = (
+    "/.coverage",
+    "/.git",
+    "/index.html",
+    "/og-social-preview.png",
+    "/uv.lock",
+    ".mp3",
+    ".mp4",
+    ".mov",
+    ".wav",
+    ".webm",
     "/test_comprehensive.py",
     "/test_real_video.py",
 )
@@ -33,12 +52,14 @@ def find_offenders(artifact: Path) -> list[str]:
     else:
         raise ValueError(f"Unsupported artifact type: {artifact}")
 
-    return [
-        name
-        for name in names
-        if any(fragment in name for fragment in FORBIDDEN_SUBSTRINGS)
-        or any(name.endswith(suffix) for suffix in FORBIDDEN_SUFFIXES)
-    ]
+    offenders = []
+    for name in names:
+        normalized = f"/{name.lstrip('/')}"
+        if any(fragment in normalized for fragment in FORBIDDEN_SUBSTRINGS) or any(
+            normalized.endswith(suffix) for suffix in FORBIDDEN_SUFFIXES
+        ):
+            offenders.append(name)
+    return offenders
 
 
 def main() -> int:
