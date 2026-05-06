@@ -62,7 +62,7 @@ Very fast. Since it wraps FFmpeg directly, operations like trimming, merging, an
 
 ## Can I use it in production?
 
-Yes. mcp-video currently collects 1074 tests and has comprehensive error handling with structured error types, input validation, and FFmpeg timeout protection. It's used in CI/CD pipelines for automated video quality checks.
+Yes. mcp-video has comprehensive error handling with structured error types, input validation, FFmpeg timeout protection, and CI coverage for package and repository readiness. It's used in CI/CD pipelines for automated video quality checks.
 
 ## How do I contribute?
 

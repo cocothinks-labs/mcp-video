@@ -11,6 +11,25 @@ This project follows a simple release-note style:
 
 ## Unreleased
 
+## 1.3.6 - 2026-05-06
+
+### Added
+
+- Added PUSHING CREATION-compatible cinematic pre-production tools:
+  - `video_project_create`
+  - `style_pack_read`
+  - `storyboard_read`
+  - `shot_prompt_render`
+
+### Changed
+
+- Updated package, MCP registry metadata, README, `llms.txt`, and tool docs for the 91-tool cinematic creation surface.
+- Toned down public launch copy so test coverage is supporting evidence rather than the main product message.
+
+### Fixed
+
+- Restored README readiness anchors required by the repository audit.
+
 ## 1.3.1 - 2026-05-03
 
 ### Security
