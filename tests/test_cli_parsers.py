@@ -2,7 +2,6 @@
 
 import argparse
 
-import pytest
 
 
 def _get_subparser_names(parser_module):

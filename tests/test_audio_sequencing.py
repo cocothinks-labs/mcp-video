@@ -1,6 +1,5 @@
 """Tests for audio sequencing, composition, and effects."""
 
-import wave
 from pathlib import Path
 
 import pytest

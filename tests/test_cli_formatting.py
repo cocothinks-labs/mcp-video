@@ -5,9 +5,8 @@ Console which we do not capture.
 """
 
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-import pytest
 
 from mcp_video.cli.formatting import (
     _format_ai_color_grade,

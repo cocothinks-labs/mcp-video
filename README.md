@@ -14,7 +14,7 @@
 <p align="center">
   <a href="https://pypi.org/project/mcp-video/"><img src="https://img.shields.io/pypi/v/mcp-video.svg" alt="PyPI"></a>
   <a href="https://github.com/KyaniteLabs/mcp-video/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/KyaniteLabs/mcp-video/.github/workflows/ci.yml?branch=master&label=CI" alt="CI"></a>
-  <img src="https://img.shields.io/badge/tools-86%20MCP%20tools-orange.svg" alt="Tools">
+  <img src="https://img.shields.io/badge/tools-99%20MCP%20tools-orange.svg" alt="Tools">
   <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License">
   <img src="https://img.shields.io/badge/python-3.11+-blue.svg" alt="Python">
 </p>
@@ -179,7 +179,7 @@ mcp-video template tiktok video.mp4 --caption "Check this out!"
 
 ## MCP Tools
 
-85 unique MCP tools across 10 categories, plus a `search_tools` meta-tool for fast discovery. All return structured JSON. See the [full tool reference](docs/TOOLS.md) for complete details.
+99 MCP tools across 12 categories, including `search_tools` for fast discovery. All return structured JSON. See the [full tool reference](docs/TOOLS.md) for complete details.
 
 | Category | Count | Highlights |
 |----------|-------|------------|
@@ -205,31 +205,34 @@ results = editor.search_tools("subtitle")  # Find subtitle-related tools
 
 ## Hyperframes Integration
 
-Create videos programmatically with [Hyperframes](https://hyperframes.io/) — an HTML-native framework for video (Apache 2.0).
-
-```
-1. Create project     -> hyperframes_init
-2. Add blocks         -> hyperframes_add_block
-3. Preview live       -> hyperframes_preview
-4. Render             -> hyperframes_render
-5. Post-process       -> hyperframes_to_mcpvideo
-```
-
-See [Hyperframes docs](docs/TOOLS.md#hyperframes--html-native-video-8-tools) and the [Python client reference](docs/PYTHON_CLIENT.md).
-
-## Hyperframes Integration
-
 Create videos programmatically with [Hyperframes](https://hyperframes.io/) — an HTML-native framework for video.
 
 ```
 1. Init project       -> hyperframes_init
-2. Add blocks         -> hyperframes_add_block
-3. Preview live       -> hyperframes_preview
-4. Render             -> hyperframes_render
-5. Post-process       -> hyperframes_to_mcpvideo
+2. Browse blocks      -> hyperframes_catalog
+3. Capture / TTS / BG -> hyperframes_capture, hyperframes_tts, hyperframes_remove_background
+4. Inspect / snapshot -> hyperframes_inspect, hyperframes_snapshot
+5. Render + finish    -> hyperframes_render, hyperframes_to_mcpvideo
 ```
 
-See [Hyperframes docs](docs/TOOLS.md#hyperframes--html-native-video-8-tools) and the [Python client reference](docs/PYTHON_CLIENT.md).
+Hyperframes owns HTML-video authoring, social/caption blocks, website capture, local TTS, transcription, background removal, inspection, and rendering. mcp-video wraps those capabilities for MCP agents and then handles FFmpeg post-processing, platform exports, quality checks, and local packaging.
+
+See [Hyperframes docs](docs/TOOLS.md#hyperframes--html-native-video-18-tools) and the [Python client reference](docs/PYTHON_CLIENT.md).
+
+## Content Repurposing
+
+Create local YouTube/social packages from one source video:
+
+```python
+package = editor.repurpose(
+    "source.mp4",
+    platforms=["youtube", "youtube-shorts", "instagram-post"],
+    output_dir="out/repurposed",
+)
+print(package["manifest_path"])
+```
+
+`video_repurpose_plan` writes a dry-run manifest. `video_repurpose` renders platform-ready assets plus thumbnails, storyboards, release-checkpoint artifacts, and `repurpose_manifest.json`. Publishing/scheduling is intentionally explicit and outside v1.
 
 ---
 
@@ -346,7 +349,7 @@ See [`workflows/CONTEXT.md`](workflows/CONTEXT.md) for the routing table.
 mcp_video/
   client/                # Python Client API (mixins per domain)
   client/meta.py         # Client discovery mixin (search_tools)
-  server.py              # MCP server (87 tools + 4 resources + search_tools meta-tool)
+  server.py              # MCP server (99 tools + 4 resources)
   server_tools_*.py      # Tool registration by category
   engine.py              # Core FFmpeg engine
   engine_*.py            # Specialized engines (thumbnail, edit, probe, etc.)

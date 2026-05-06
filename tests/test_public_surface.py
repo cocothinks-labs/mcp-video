@@ -53,10 +53,22 @@ EXPECTED_CLI_COMMANDS = {
     "hyperframes-compositions",
     "hyperframes-preview",
     "hyperframes-still",
+    "hyperframes-snapshot",
+    "hyperframes-inspect",
+    "hyperframes-info",
+    "hyperframes-catalog",
+    "hyperframes-capture",
+    "hyperframes-tts",
+    "hyperframes-transcribe",
+    "hyperframes-remove-background",
+    "hyperframes-doctor",
+    "hyperframes-benchmark",
     "hyperframes-init",
     "hyperframes-add-block",
     "hyperframes-validate",
     "hyperframes-pipeline",
+    "repurpose-plan",
+    "repurpose",
     "effect-vignette",
     "effect-glow",
     "effect-noise",
@@ -139,10 +151,22 @@ EXPECTED_SERVER_TOOLS = {
     "hyperframes_compositions",
     "hyperframes_preview",
     "hyperframes_still",
+    "hyperframes_snapshot",
+    "hyperframes_inspect",
+    "hyperframes_info",
+    "hyperframes_catalog",
+    "hyperframes_capture",
+    "hyperframes_tts",
+    "hyperframes_transcribe",
+    "hyperframes_remove_background",
+    "hyperframes_doctor",
+    "hyperframes_benchmark",
     "hyperframes_init",
     "hyperframes_add_block",
     "hyperframes_validate",
     "hyperframes_to_mcpvideo",
+    "video_repurpose_plan",
+    "video_repurpose",
     "audio_synthesize",
     "audio_preset",
     "audio_sequence",
@@ -197,7 +221,7 @@ def test_cli_help_lists_all_commands():
     help_commands = set(command_list.split(","))
 
     assert help_commands == EXPECTED_CLI_COMMANDS
-    assert len(EXPECTED_CLI_COMMANDS) == 86
+    assert len(EXPECTED_CLI_COMMANDS) == 98
 
 
 def test_agent_cookbook_dry_run():
@@ -219,7 +243,7 @@ def test_server_tool_registry_keeps_public_tool_names():
     tool_names = {tool.name for tool in asyncio.run(mcp.list_tools())}
 
     assert tool_names >= EXPECTED_SERVER_TOOLS
-    assert len(tool_names) == 87
+    assert len(tool_names) == 99
 
 
 def test_module_reexports():
@@ -237,6 +261,8 @@ def test_module_reexports():
         "video_trim",
         "video_analyze",
         "hyperframes_render",
+        "hyperframes_snapshot",
+        "video_repurpose_plan",
         "image_analyze_product",
     ]:
         assert hasattr(server, name), f"server missing {name}"

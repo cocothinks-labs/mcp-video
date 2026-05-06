@@ -8,7 +8,6 @@ import importlib
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 
 class FakeCommandRunner:
@@ -381,21 +380,23 @@ def _reload_and_dispatch(handler_module_name, command, args, monkeypatch):
         "_format_hyperframes_add_block", "_format_hyperframes_validate",
         "_format_hyperframes_pipeline",
     ]
-    with patch("mcp_video.cli.runner._resolve_engine", return_value=lambda *a, **k: "ok"):
-        with patch("mcp_video.cli.common._with_spinner", return_value="ok"):
-            with patch("mcp_video.cli.runner._out"):
-                with patch.multiple(
-                    "mcp_video.cli.formatting",
-                    **{name: MagicMock() for name in formatters}
-                ):
-                    mod = importlib.import_module(handler_module_name)
-                    importlib.reload(mod)
-                    monkeypatch.setattr(mod, "CommandRunner", FakeCommandRunner)
-                    fn_name = [
-                        n for n in dir(mod)
-                        if n.startswith("handle_") and callable(getattr(mod, n))
-                    ][0]
-                    return getattr(mod, fn_name)(args, use_json=False)
+    with (
+        patch("mcp_video.cli.runner._resolve_engine", return_value=lambda *a, **k: "ok"),
+        patch("mcp_video.cli.common._with_spinner", return_value="ok"),
+        patch("mcp_video.cli.runner._out"),
+        patch.multiple(
+            "mcp_video.cli.formatting",
+            **{name: MagicMock() for name in formatters},
+        ),
+    ):
+        mod = importlib.import_module(handler_module_name)
+        importlib.reload(mod)
+        monkeypatch.setattr(mod, "CommandRunner", FakeCommandRunner)
+        fn_name = next(
+            n for n in dir(mod)
+            if n.startswith("handle_") and callable(getattr(mod, n))
+        )
+        return getattr(mod, fn_name)(args, use_json=False)
 
 
 class TestDispatchEngineCmd:
