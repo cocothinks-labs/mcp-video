@@ -62,6 +62,21 @@ class FFprobeNotFoundError(MCPVideoError):
         )
 
 
+class ValidationError(MCPVideoError, ValueError):
+    """User parameter validation failed."""
+
+    def __init__(self, parameter: str, detail: str) -> None:
+        super().__init__(
+            f"Invalid parameter {parameter}: {detail}",
+            error_type="validation_error",
+            code="invalid_parameter",
+            suggested_action={
+                "auto_fix": False,
+                "description": f"Correct the {parameter} argument and retry.",
+            },
+        )
+
+
 class InputFileError(MCPVideoError):
     """Input file doesn't exist or is not a valid video."""
 
@@ -89,7 +104,7 @@ class CodecError(MCPVideoError):
                 "auto_fix": True,
                 "description": f"Auto-convert input from {codec} to H.264/AAC before editing",
             },
-            docs_url="https://github.com/pastorsimon1798/mcp-video#codec-compatibility",
+            docs_url="https://github.com/KyaniteLabs/mcp-video#codec-compatibility",
         )
 
 

@@ -23,7 +23,9 @@ class TestEngineResizeEdgeCases:
     def test_unknown_aspect_ratio_raises(self):
         from mcp_video.engine_resize import resize
 
-        mock_info = SimpleNamespace(width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4")
+        mock_info = SimpleNamespace(
+            width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4"
+        )
         with (
             patch("mcp_video.engine_resize.probe", return_value=mock_info),
             patch("mcp_video.engine_resize._validate_input_path", return_value="/tmp/v.mp4"),
@@ -36,7 +38,9 @@ class TestEngineRotateAngles:
     def test_rotate_90(self):
         from mcp_video.engine_rotate import rotate
 
-        mock_info = SimpleNamespace(width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4")
+        mock_info = SimpleNamespace(
+            width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4"
+        )
         with (
             patch("mcp_video.engine_probe.probe", return_value=mock_info),
             patch("mcp_video.engine_rotate._validate_input_path", return_value="/tmp/v.mp4"),
@@ -51,7 +55,9 @@ class TestEngineRotateAngles:
     def test_rotate_180(self):
         from mcp_video.engine_rotate import rotate
 
-        mock_info = SimpleNamespace(width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4")
+        mock_info = SimpleNamespace(
+            width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4"
+        )
         with (
             patch("mcp_video.engine_probe.probe", return_value=mock_info),
             patch("mcp_video.engine_rotate._validate_input_path", return_value="/tmp/v.mp4"),
@@ -66,7 +72,9 @@ class TestEngineRotateAngles:
     def test_rotate_270(self):
         from mcp_video.engine_rotate import rotate
 
-        mock_info = SimpleNamespace(width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4")
+        mock_info = SimpleNamespace(
+            width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4"
+        )
         with (
             patch("mcp_video.engine_probe.probe", return_value=mock_info),
             patch("mcp_video.engine_rotate._validate_input_path", return_value="/tmp/v.mp4"),
@@ -81,7 +89,9 @@ class TestEngineRotateAngles:
     def test_rotate_flip_horizontal(self):
         from mcp_video.engine_rotate import rotate
 
-        mock_info = SimpleNamespace(width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4")
+        mock_info = SimpleNamespace(
+            width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4"
+        )
         with (
             patch("mcp_video.engine_probe.probe", return_value=mock_info),
             patch("mcp_video.engine_rotate._validate_input_path", return_value="/tmp/v.mp4"),
@@ -96,7 +106,9 @@ class TestEngineRotateAngles:
     def test_rotate_flip_vertical(self):
         from mcp_video.engine_rotate import rotate
 
-        mock_info = SimpleNamespace(width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4")
+        mock_info = SimpleNamespace(
+            width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4"
+        )
         with (
             patch("mcp_video.engine_probe.probe", return_value=mock_info),
             patch("mcp_video.engine_rotate._validate_input_path", return_value="/tmp/v.mp4"),
@@ -162,7 +174,9 @@ class TestEngineSplitScreen:
     def test_split_screen_top_bottom(self):
         from mcp_video.engine_split_screen import split_screen
 
-        mock_info = SimpleNamespace(width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4")
+        mock_info = SimpleNamespace(
+            width=640, height=480, duration=1.0, resolution="640x480", size_mb=1.0, format="mp4"
+        )
         with (
             patch("mcp_video.engine_split_screen.probe", return_value=mock_info),
             patch("mcp_video.engine_probe.probe", return_value=mock_info),

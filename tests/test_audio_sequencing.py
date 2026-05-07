@@ -62,6 +62,7 @@ class TestAudioSequence:
 
     def test_empty_sequence_raises(self, tmp_path):
         from mcp_video.errors import MCPVideoError
+
         output = str(tmp_path / "out.wav")
         with pytest.raises(MCPVideoError, match="empty"):
             audio_sequence([], output, sample_rate=8000)

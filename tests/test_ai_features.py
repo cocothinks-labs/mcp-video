@@ -342,9 +342,20 @@ class TestTranscription:
             assert isinstance(result["segments"], list)
             assert isinstance(result["language"], str)
 
-    def test_transcribe_with_srt_output(self, skip_if_no_whisper, sample_speech_video):
+    def test_transcribe_with_srt_output(self, monkeypatch, sample_speech_video):
         """Test that SRT file is created when output_srt is provided."""
         from mcp_video.ai_engine import ai_transcribe
+
+        class FakeWhisperModel:
+            def transcribe(self, _audio_path, **_options):
+                return {
+                    "text": "hello launch",
+                    "language": "en",
+                    "segments": [{"start": 0.0, "end": 1.0, "text": "hello launch"}],
+                }
+
+        fake_whisper = types.SimpleNamespace(load_model=lambda _model: FakeWhisperModel())
+        monkeypatch.setitem(sys.modules, "whisper", fake_whisper)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             output_srt = os.path.join(tmpdir, "output.srt")
@@ -511,6 +522,56 @@ def test_ai_scene_detect_caps_ai_frame_extraction_rate(tmp_path, monkeypatch):
     vf_arg = seen_cmds[0][seen_cmds[0].index("-vf") + 1]
     expected_interval = 1200 / MAX_AI_SCENE_FRAMES
     assert vf_arg.startswith(f"fps=1/{expected_interval}")
+
+
+def test_ai_scene_detect_ai_mode_returns_json_safe_hash_diffs(tmp_path, monkeypatch):
+    """Perceptual hash results should not leak NumPy scalars into JSON responses."""
+    import json
+    import numpy as np
+
+    from mcp_video.ai_engine import ai_scene_detect
+
+    video = tmp_path / "video.mp4"
+    video.write_bytes(b"not a real video; subprocess is mocked")
+
+    class FakeHash:
+        def __init__(self, value: int):
+            self.value = value
+
+        def __sub__(self, other):
+            return np.int64(abs(self.value - other.value))
+
+    imagehash_module = types.ModuleType("imagehash")
+    hash_values = iter([FakeHash(0), FakeHash(42)])
+    imagehash_module.phash = lambda _img: next(hash_values)
+    image_module = types.ModuleType("PIL.Image")
+    seen_images = []
+
+    def fake_open(path):
+        seen_images.append(path)
+        return object()
+
+    image_module.open = fake_open
+    pil_module = types.ModuleType("PIL")
+    pil_module.Image = image_module
+    monkeypatch.setitem(sys.modules, "imagehash", imagehash_module)
+    monkeypatch.setitem(sys.modules, "PIL", pil_module)
+    monkeypatch.setitem(sys.modules, "PIL.Image", image_module)
+    monkeypatch.setattr("mcp_video.ai_engine.scene._run_ffprobe_json", lambda _path: {"format": {"duration": "1"}})
+
+    def fake_run(cmd, capture_output, text, timeout):
+        frame_pattern = Path(cmd[-1])
+        frame_pattern.parent.mkdir(parents=True, exist_ok=True)
+        (frame_pattern.parent / "frame_0001.jpg").write_bytes(b"one")
+        (frame_pattern.parent / "frame_0002.jpg").write_bytes(b"two")
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    scenes = ai_scene_detect(str(video), threshold=0.3, use_ai=True)
+
+    assert scenes == [{"timestamp": 0.5, "frame": None, "hash_diff": 42}]
+    json.dumps({"scenes": scenes})
 
 
 def test_require_audio_stream_propagates_probe_errors(monkeypatch):
@@ -1110,7 +1171,7 @@ def test_ai_upscale_import_error_message_mentions_opencv_contrib(sample_video, t
     output_video = str(tmp_path / "output.mp4")
 
     with (
-        patch("mcp_video.ai_engine._ai_upscale_opencv", side_effect=ImportError),
+        patch("mcp_video.ai_engine.upscale._ai_upscale_opencv", side_effect=ImportError),
         pytest.raises(MCPVideoError, match="opencv-contrib-python"),
     ):
         ai_upscale(sample_video, output_video, scale=2)
@@ -1329,18 +1390,14 @@ class TestUpscaleHelpers:
     def test_download_fsrcnn_model_uses_cache(self, monkeypatch, tmp_path):
         from mcp_video.ai_engine.upscale import _download_fsrcnn_model
 
-        monkeypatch.setattr(
-            "mcp_video.ai_engine.upscale.Path.home", lambda: tmp_path
-        )
+        monkeypatch.setattr("mcp_video.ai_engine.upscale.Path.home", lambda: tmp_path)
         cache_dir = tmp_path / ".cache" / "mcp-video" / "models"
         cache_dir.mkdir(parents=True, exist_ok=True)
         model_path = cache_dir / "FSRCNN_x2.pb"
         model_path.write_bytes(b"fake_model")
 
         # Patch hash verification to accept fake model
-        monkeypatch.setattr(
-            "mcp_video.ai_engine.upscale._verify_model_hash", lambda p, h: None
-        )
+        monkeypatch.setattr("mcp_video.ai_engine.upscale._verify_model_hash", lambda p, h: None)
 
         result = _download_fsrcnn_model(2)
         assert result == model_path

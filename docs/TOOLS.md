@@ -1,6 +1,6 @@
 # MCP Tools Reference
 
-99 MCP tools across 12 categories, including `search_tools` for fast discovery. Media-producing tools return structured JSON with `success`, `output_path`, and operation metadata. On failure, tools return `{"success": false, "error": {...}}` with auto-fix suggestions.
+91 MCP tools across 11 categories, including the `search_tools` meta-tool. All return structured JSON with `success`, `output_path`, and operation metadata. On failure, they return `{"success": false, "error": {...}}` with auto-fix suggestions.
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Tool | Description |
 |------|-------------|
-| `search_tools` | Search all registered MCP tools by keyword. Returns matching tool names, descriptions, and required parameters. Use this when you need to find the right tool without loading all 90 descriptions into context. |
+| `search_tools` | Search all registered MCP tools by keyword. Returns matching tool names, descriptions, and required parameters. Use this when you need to find the right tool without loading all 91 descriptions into context. |
 
 **Python Client:**
 ```python
@@ -20,7 +20,20 @@ results = editor.search_tools("subtitle")
 
 ---
 
-## Core Editing (30 tools)
+## Cinematic Creation (4 tools)
+
+Plan video generation like a director of photography before rendering. These tools implement a PUSHING CREATION-compatible pre-production workflow: project scaffold, STYLE_/NEG_ blocks, storyboard tables, and prompt expansion.
+
+| Tool | Description |
+|------|-------------|
+| `video_project_create` | Scaffold `projects/<slug>/style.md`, `storyboard.md`, and `refs/` using cinematic starter templates |
+| `style_pack_read` | Parse STYLE_ and NEG_ blocks from `style.md` or a project directory |
+| `storyboard_read` | Parse storyboard rows from `storyboard.md` or a project directory |
+| `shot_prompt_render` | Expand one storyboard shot into `prompt` and `negative_prompt` strings for a generation provider |
+
+---
+
+## Core Editing (32 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -53,7 +66,9 @@ results = editor.search_tools("subtitle")
 | `video_export` | Render with quality and format settings |
 | `video_normalize_audio` | Normalize audio loudness to a target LUFS level |
 | `video_batch` | Apply the same operation to multiple video files |
+| `video_cleanup` | Remove mcp-video-managed intermediate files |
 | `video_hls_segment` | Segment video into HLS format with multi-quality variants |
+| `video_template_preview` | Preview social/video template operations before rendering |
 
 ---
 
@@ -65,8 +80,8 @@ results = editor.search_tools("subtitle")
 | `video_ai_remove_silence` | Auto-remove silent sections with configurable threshold | FFmpeg |
 | `video_ai_transcribe` | Speech-to-text with timestamp alignment | [openai-whisper](https://pypi.org/project/openai-whisper/) |
 | `video_ai_scene_detect` | ML-enhanced scene change detection (perceptual hashing) | [imagehash](https://pypi.org/project/imagehash/), Pillow |
-| `video_ai_stem_separation` | Isolate vocals, drums, bass, other instruments | [demucs](https://pypi.org/project/demucs/) |
-| `video_ai_upscale` | AI super-resolution upscaling (2x or 4x) | [realesrgan](https://pypi.org/project/realesrgan/) or [opencv-contrib-python](https://pypi.org/project/opencv-contrib-python/) |
+| `video_ai_stem_separation` | Isolate vocals, drums, bass, other instruments | [demucs](https://pypi.org/project/demucs/), Torch, TorchAudio, TorchCodec |
+| `video_ai_upscale` | AI super-resolution upscaling (2x or 4x) | [opencv-contrib-python](https://pypi.org/project/opencv-contrib-python/); Real-ESRGAN/BasicSR where supported |
 | `video_ai_color_grade` | Auto color grading with style presets or reference matching | FFmpeg |
 | `video_quality_check` | Check brightness, contrast, saturation, audio levels, color balance |
 | `video_design_quality_check` | Full design quality analysis: layout, typography, color, motion, composition |
@@ -79,7 +94,7 @@ Install only the AI dependencies you need:
 pip install "mcp-video[transcribe]"  # Whisper transcription
 pip install "mcp-video[ai-scene]"    # perceptual scene hashing
 pip install "mcp-video[stems]"       # Demucs stem separation
-pip install "mcp-video[upscale]"     # Real-ESRGAN/OpenCV upscaling
+pip install "mcp-video[upscale]"     # OpenCV upscaling; Real-ESRGAN/BasicSR where supported
 pip install "mcp-video[ai]"          # all AI extras, kept for compatibility
 ```
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-mcp-video has **905 tests** (844 fast, 61 slow/integration) covering public MCP tools, Python client, CLI, FFmpeg operations, AI features, and engine internals. Some tests are environment-sensitive and may skip when optional dependencies or system capabilities are unavailable.
+mcp-video currently collects **1074 tests** covering public MCP tools, Python client, CLI, FFmpeg operations, AI features, cinematic creation helpers, Hyperframes integration, security hardening, and engine internals. Some tests are environment-sensitive and may skip when optional dependencies or system capabilities are unavailable.
 
 ## Test Suite: `tests/test_real_all_features.py`
 
@@ -68,11 +68,11 @@ python -m pytest tests/ -v -m "not hyperframes"
 ### 4. AI Stem Separation (`test_43_ai_stem_separation`)
 - Uses Facebook Demucs
 - Separates vocals, drums, bass, other
-- Provided by the `mcp-video[ai]` extra (`demucs`, `torch`, `torchaudio`)
+- Provided by the `mcp-video[ai]` extra (`demucs`, `torch`, `torchaudio`, `torchcodec`)
 
 ### 5. AI Upscale (`test_44_ai_upscale`)
 - OpenCV DNN with FSRCNN model (57KB, fast)
-- Real-ESRGAN fallback (if basicsr fixed)
+- Real-ESRGAN path only where BasicSR can build; Python 3.13 uses the OpenCV fallback
 - 2x and 4x upscaling
 - Provided by the `mcp-video[ai]` extra (`opencv-contrib-python`, `numpy`)
 
@@ -105,7 +105,7 @@ ffmpeg -filters | grep vidstab
 pip install "mcp-video[ai]"
 
 # Or install individual packages if you only need a subset
-pip install demucs torch torchaudio openai-whisper realesrgan basicsr imagehash numpy opencv-contrib-python
+pip install demucs torch torchaudio torchcodec openai-whisper imagehash numpy opencv-contrib-python
 ```
 
 ## Test Fixtures
@@ -131,7 +131,7 @@ pip install demucs torch torchaudio openai-whisper realesrgan basicsr imagehash 
 | test_44_ai_upscale | ~30s | FSRCNN model (fast CPU inference) |
 | test_43_ai_stem_separation | ~30s | Downloads model on first run |
 | Full suite | ~5min | All 70 real-media tests |
-| Full project suite | ~8min | 905 tests total |
+| Full project suite | Environment-dependent | 1074 tests collected |
 
 ## Recent Fixes
 

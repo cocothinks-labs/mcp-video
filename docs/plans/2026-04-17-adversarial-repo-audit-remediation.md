@@ -1,5 +1,7 @@
 # Adversarial Repo Audit Remediation Implementation Plan
 
+> **Historical document.** Remotion was removed in v1.3.0/v1.3.1. This plan is preserved for reference only.
+
 **Goal:** Turn `mcp-video` from a high-speed agent-built repo with strong raw capability into a trusted, discoverable, maintainable open source project that can compound GitHub adoption.
 
 **Architecture:** Separate the plan into trust rails, adoption/discovery, maintainability, integration hardening, and growth loops. Preserve the public MCP/Python/CLI API while splitting oversized internals and deleting duplicated helper paths.
@@ -124,7 +126,7 @@ GitHub settings updated:
    ```bash
    git fetch --tags origin
    git tag --list --sort=-creatordate | head
-   gh release list --repo Pastorsimon1798/mcp-video --limit 10
+   gh release list --repo KyaniteLabs/mcp-video --limit 10
    ```
 
 2. If no `v1.2.1` tag exists, create a signed or annotated tag from current `master` after CI is green:

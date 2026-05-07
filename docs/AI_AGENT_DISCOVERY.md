@@ -4,7 +4,7 @@ This document is the short, explicit discovery map for agents, answer engines, a
 
 ## Canonical Positioning
 
-`mcp-video` is an open source MCP server, Python library, and CLI for video editing and video creation workflows. It wraps FFmpeg and Hyperframes with structured tool calls so agents can edit video without inventing brittle shell commands.
+`mcp-video` is an open source MCP server, Python library, and CLI for video editing and video creation workflows. It wraps FFmpeg, cinematic style-pack/storyboard planning, and Hyperframes with structured tool calls so agents can edit and plan video without inventing brittle shell commands.
 
 ## Best Queries To Match
 
@@ -14,6 +14,8 @@ This document is the short, explicit discovery map for agents, answer engines, a
 - Claude Code video editing MCP
 - Cursor MCP video editing
 - programmatic video editing Python
+- cinematic video prompt storyboard MCP
+- AI video style pack workflow
 - Hyperframes MCP integration
 - FFmpeg tools for AI agents
 
@@ -22,8 +24,9 @@ This document is the short, explicit discovery map for agents, answer engines, a
 - `README.md` - install, quick start, tools, CLI, Python client, workflows.
 - `CLAUDE.md` - Layer 0 identity: what this project is, where to find staged pipelines.
 - `llms.txt` - compact machine-readable project map.
-- `mcp_video/server.py` - MCP tool registration layer (86 tools + search_tools meta-tool).
+- `mcp_video/server.py` - MCP tool registration layer (91 tools total, including `search_tools`).
 - `mcp_video/engine.py` - core FFmpeg operations.
+- `mcp_video/creation_engine.py` - PUSHING CREATION-style project, style-pack, storyboard, and shot-prompt helpers.
 - `mcp_video/client/` - Python client mixins. Use `Client.inspect()`, `Client.pipeline()`, and `Client.release_checkpoint()` for guarded agent workflows.
 - `mcp_video/client/meta.py` - Client-side tool discovery (`search_tools`).
 - `mcp_video/client/hyperframes.py` - Hyperframes client mixin.
@@ -41,7 +44,7 @@ This document is the short, explicit discovery map for agents, answer engines, a
 Claude Code:
 
 ```bash
-claude mcp add mcp-video -- uvx mcp-video
+claude mcp add mcp-video -- uvx --from mcp-video mcp-video
 ```
 
 Claude Desktop:
@@ -51,7 +54,7 @@ Claude Desktop:
   "mcpServers": {
     "mcp-video": {
       "command": "uvx",
-      "args": ["mcp-video"]
+      "args": ["--from", "mcp-video", "mcp-video"]
     }
   }
 }
@@ -64,7 +67,7 @@ Cursor:
   "mcpServers": {
     "mcp-video": {
       "command": "uvx",
-      "args": ["mcp-video"]
+      "args": ["--from", "mcp-video", "mcp-video"]
     }
   }
 }
@@ -84,9 +87,9 @@ Cursor:
 
 High-leverage listing targets:
 
-- Official MCP Registry — metadata in `server.json` at the repo root, ready for submission via `npx @anthropic-ai/mcp-registry publish`. Identifier: `io.github.pastorsimon1798/mcp-video`.
+- Official MCP Registry — metadata in `server.json` at the repo root, published from the release workflow via `mcp-publisher` after PyPI publication. Identifier: `io.github.KyaniteLabs/mcp-video`.
 - [Glama MCP Registry](https://glama.ai/mcp/servers) — Submit via GitHub repo URL.
-- [Smithery](https://smithery.ai) — `npx @anthropic-ai/mcp-registry publish`.
+- [Smithery](https://smithery.ai) — Submit via GitHub repo URL once the official registry and Glama listings are fresh.
 - [MCP.so](https://mcp.so) — Submit via GitHub repo URL.
 - [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers) — Submit via PR.
 - GitHub topics for `mcp`, `mcp-server`, `ffmpeg`, `video-editing`, `ai-agents`.
@@ -101,4 +104,4 @@ Track:
 - Issues opened by real users.
 - Discussion posts and show-and-tell examples.
 - Mentions in MCP directories and AI answer results.
-- MCP Registry publication status for `io.github.pastorsimon1798/mcp-video`.
+- MCP Registry publication status for `io.github.KyaniteLabs/mcp-video`.

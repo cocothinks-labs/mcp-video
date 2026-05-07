@@ -4,6 +4,15 @@ import re
 import subprocess
 import sys
 import asyncio
+import json
+import tomllib
+from pathlib import Path
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 EXPECTED_CLI_COMMANDS = {
@@ -204,6 +213,10 @@ EXPECTED_SERVER_TOOLS = {
     "image_extract_colors",
     "image_generate_palette",
     "image_analyze_product",
+    "video_project_create",
+    "style_pack_read",
+    "storyboard_read",
+    "shot_prompt_render",
 }
 
 
@@ -243,7 +256,78 @@ def test_server_tool_registry_keeps_public_tool_names():
     tool_names = {tool.name for tool in asyncio.run(mcp.list_tools())}
 
     assert tool_names >= EXPECTED_SERVER_TOOLS
-    assert len(tool_names) == 99
+    assert len(tool_names) == 91
+
+
+def test_stdio_server_launches_and_lists_tools_like_registry_clients():
+    """Exercise the package the way registries launch it: stdio subprocess + MCP handshake."""
+
+    async def check_server() -> None:
+        params = StdioServerParameters(command=sys.executable, args=["-m", "mcp_video"])
+        async with stdio_client(params) as (read, write), ClientSession(read, write) as session:
+            init_result = await session.initialize()
+            tools_result = await session.list_tools()
+
+        tool_names = {tool.name for tool in tools_result.tools}
+        assert init_result.serverInfo.name == "mcp-video"
+        assert tool_names >= EXPECTED_SERVER_TOOLS
+        assert len(tool_names) == 91
+
+    asyncio.run(check_server())
+
+
+def test_public_discovery_files_do_not_point_at_old_personal_namespace():
+    checked_paths = [
+        ROOT / "README.md",
+        ROOT / "server.json",
+        ROOT / "pyproject.toml",
+        ROOT / "index.html",
+        ROOT / "robots.txt",
+        ROOT / "sitemap.xml",
+        ROOT / "docs" / "AI_AGENT_DISCOVERY.md",
+        ROOT / "scripts" / "github-pr-monitor.py",
+        ROOT / "mcp_video" / "ai_engine" / "download.py",
+        ROOT / "mcp_video" / "errors.py",
+    ]
+    stale_fragments = [
+        "pastor" + "simon1798.github.io/mcp-video",
+        "github.com/" + "pastor" + "simon1798/mcp-video",
+        "github.com/" + "Pastor" + "simon1798/mcp-video",
+        "io.github." + "pastor" + "simon1798/mcp-video",
+    ]
+
+    offenders = {
+        str(path.relative_to(ROOT)): fragment
+        for path in checked_paths
+        for fragment in stale_fragments
+        if fragment in path.read_text(encoding="utf-8")
+    }
+
+    assert offenders == {}
+
+
+def test_server_json_and_readme_match_registry_identity():
+    server = json.loads((ROOT / "server.json").read_text(encoding="utf-8"))
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert server["name"] == "io.github.KyaniteLabs/mcp-video"
+    assert server["websiteUrl"] == "https://kyanitelabs.github.io/mcp-video/"
+    assert server["repository"]["url"] == "https://github.com/KyaniteLabs/mcp-video"
+    assert server["packages"][0]["identifier"] == "mcp-video"
+    assert server["packages"][0]["runtimeHint"] == "uvx"
+    assert server["packages"][0]["transport"]["type"] == "stdio"
+    assert f"mcp-name: {server['name']}" in readme
+
+
+def test_heavy_ai_extras_keep_python313_installable():
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    optional_deps = pyproject["project"]["optional-dependencies"]
+
+    for extra in ("upscale", "ai", "all-ai"):
+        dependencies = optional_deps[extra]
+        assert "opencv-contrib-python>=4.10" in dependencies
+        assert "realesrgan>=0.3; python_version < '3.13'" in dependencies
+        assert "basicsr>=1.4; python_version < '3.13'" in dependencies
 
 
 def test_module_reexports():
@@ -264,6 +348,8 @@ def test_module_reexports():
         "hyperframes_snapshot",
         "video_repurpose_plan",
         "image_analyze_product",
+        "video_project_create",
+        "shot_prompt_render",
     ]:
         assert hasattr(server, name), f"server missing {name}"
 

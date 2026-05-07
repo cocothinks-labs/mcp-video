@@ -11,6 +11,82 @@ This project follows a simple release-note style:
 
 ## Unreleased
 
+## 1.3.10 - 2026-05-07
+
+### Fixed
+
+- Improved `mcp-video doctor` guidance on Python 3.13+ so missing Real-ESRGAN/BasicSR reports explain the BasicSR build guard and point users to the OpenCV fallback or Python 3.11/3.12 for the Real-ESRGAN backend.
+
+## 1.3.9 - 2026-05-06
+
+### Fixed
+
+- Fixed `mcp-video[all-ai]` and `mcp-video[upscale]` installs on Python 3.13 by guarding Real-ESRGAN/BasicSR dependencies behind the Python versions where BasicSR still builds, while keeping the OpenCV upscaling fallback installable.
+
+## 1.3.8 - 2026-05-06
+
+### Fixed
+
+- Fixed AI scene-detection JSON output so perceptual-hash differences are serialized as standard JSON numbers.
+- Added `torchcodec` to stem-separation extras and diagnostics so Demucs output works with current TorchAudio save behavior.
+
+## 1.3.7 - 2026-05-06
+
+### Fixed
+
+- Fixed `search_tools()` / `Client.search_tools()` so discovery includes the full 91-tool MCP surface, including PUSHING CREATION, Hyperframes, audio, and AI tools.
+
+## 1.3.6 - 2026-05-06
+
+### Added
+
+- Added PUSHING CREATION-compatible cinematic pre-production tools:
+  - `video_project_create`
+  - `style_pack_read`
+  - `storyboard_read`
+  - `shot_prompt_render`
+
+### Changed
+
+- Updated package, MCP registry metadata, README, `llms.txt`, and tool docs for the 91-tool cinematic creation surface.
+- Toned down public launch copy so test coverage is supporting evidence rather than the main product message.
+
+### Fixed
+
+- Restored README readiness anchors required by the repository audit.
+
+## 1.3.1 - 2026-05-03
+
+### Security
+
+- Fixed command injection risk in `engine_stabilize.py` — vectors file path now validated as absolute.
+- Enabled SSL certificate verification for AI model downloads in `ai_engine/upscale.py`.
+- Redacted full filesystem paths from stabilization error messages.
+
+### Fixed
+
+- Added proper AI operation timeout (3600s) for demucs/whisper — prevents premature kills on long videos.
+- Increased FFmpeg stderr buffer from 1MB to 10MB — fixes truncated progress for long-running operations.
+- Fixed temp file leak in typewriter text effect — cleanup now happens even on write failure.
+- Added `OSError` handling in hyperframes for file size race conditions.
+- Added pitch shift semitones range validation (-48 to +48) — prevents FFmpeg filter chain overflow.
+- Capped pixel count in color extraction (50K max) — prevents memory exhaustion on large images.
+- Added try-finally cleanup for Whisper temp WAV files.
+- Added bitrate/size range validation in probe before integer conversion.
+- Added 1MB JSON size limit in CLI argument parser.
+- Added `threading.Lock` for thread-safe probe cache.
+- Centralized all timeout constants in `limits.py`.
+
+### Changed
+
+- Standardized tool count to **87 MCP tools** across all documentation and metadata files.
+- Removed duplicate Hyperframes Integration section from README.
+- Removed duplicate architecture entry from README.
+- Documented `video_cleanup` tool in TOOLS.md.
+- Updated test count in TESTING.md.
+- Marked shipped v1.3.0 features as completed in ROADMAP.md.
+- Updated server.json version to 1.3.1.
+
 ### Removed
 
 - **Remotion integration completely removed.** All Remotion MCP tools, CLI commands, client methods, engine modules, and tests have been deleted. The project now uses Hyperframes (HTML-native, Apache 2.0) as its sole code-based video creation engine.
@@ -18,10 +94,19 @@ This project follows a simple release-note style:
   - Removed `RemotionNotFoundError`, `RemotionProjectError`, `RemotionRenderError` from `errors.py`
   - Removed `VALID_REMOTION_TEMPLATES` from `validation.py`
   - Removed Remotion category from `doctor.py` checks
-  - Updated `test_public_surface.py`: 85 MCP tools (was 93), 86 CLI commands (was 94)
+  - Updated `test_public_surface.py`: 87 MCP tools (was 93), 88 CLI commands (was 94)
   - Removed `remotion` optional dependency, pytest marker, and keyword from `pyproject.toml`
   - Removed Remotion CI smoke test job
   - Updated all documentation to remove Remotion references
+
+### Design
+
+- Redesigned landing page: Space Grotesk + DM Sans typography, orange/teal video-editing palette.
+- Fixed broken mobile menu with proper responsive CSS.
+- Added inline SVG favicon, ARIA labels, skip-to-content link.
+- Improved hero headline: "87 Video Tools. Zero Cloud Costs."
+- Added Organization schema markup for better SEO.
+- Optimized font loading with preconnect hints.
 
 ## 1.3.0 - 2026-04-28
 
@@ -45,7 +130,7 @@ This project follows a simple release-note style:
 
 - **Merge auto-normalize** now handles fps mismatches, audio sample rate mismatches, and rotation-aware display dimensions during normalization.
 - **Remotion deprecation upgraded** from `DeprecationWarning` to `FutureWarning` for v1.3.0 timeline.
-- Public tool count updated from 90 to **93** unique MCP tools.
+- Public tool count updated from 90 to **87** unique MCP tools.
 
 ### Fixed
 

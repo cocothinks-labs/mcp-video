@@ -93,7 +93,7 @@ def _run_hyperframes(
     timeout: int = 600,
 ) -> subprocess.CompletedProcess[str]:
     """Run an npx hyperframes command and return the CompletedProcess."""
-    cmd = ["npx", "hyperframes", *args]
+    cmd = ["npx", "--yes", "--no-install", "hyperframes", *args]
     try:
         return subprocess.run(
             cmd,
@@ -123,22 +123,6 @@ _SCHEMA: dict[str, dict[str, Any]] = {
             "format": "format",
             "workers": "workers",
             "crf": "crf",
-            "video-bitrate": "video_bitrate",
-            "variables": "variables",
-            "variables-file": "variables_file",
-            "max-concurrent-renders": "max_concurrent_renders",
-        },
-        "switches": {
-            "docker": "docker",
-            "hdr": "hdr",
-            "sdr": "sdr",
-            "gpu": "gpu",
-            "browser-gpu": "browser_gpu",
-            "no-browser-gpu": "no_browser_gpu",
-            "quiet": "quiet",
-            "strict": "strict",
-            "strict-all": "strict_all",
-            "strict-variables": "strict_variables",
         },
         "timeout": 600,
     },
@@ -151,122 +135,11 @@ _SCHEMA: dict[str, dict[str, Any]] = {
     "snapshot": {
         "subcommand": "snapshot",
         "positional": ["project_path"],
-        "flags": {
-            "frames": "frames",
-            "at": "at_csv",
-            "timeout": "timeout_ms",
+        "fixed": ["--frames", "1"],
+        "computed": {
+            "at": lambda kw: str(kw.get("frame", 0) / 30.0),
         },
         "timeout": 120,
-    },
-    "inspect": {
-        "subcommand": "inspect",
-        "positional": ["project_path"],
-        "fixed": ["--json"],
-        "flags": {
-            "samples": "samples",
-            "at": "at_csv",
-            "tolerance": "tolerance",
-            "timeout": "timeout_ms",
-            "max-issues": "max_issues",
-        },
-        "switches": {
-            "strict": "strict",
-            "collapse-static": "collapse_static",
-            "no-collapse-static": "no_collapse_static",
-        },
-        "timeout": 120,
-    },
-    "info": {
-        "subcommand": "info",
-        "positional": ["project_path"],
-        "fixed": ["--json"],
-        "timeout": 60,
-    },
-    "catalog": {
-        "subcommand": "catalog",
-        "fixed": ["--json"],
-        "flags": {
-            "type": "item_type",
-            "tag": "tag",
-        },
-        "cwd_key": None,
-        "timeout": 60,
-    },
-    "capture": {
-        "subcommand": "capture",
-        "positional": ["url"],
-        "fixed": ["--json"],
-        "flags": {
-            "output": "output",
-            "max-screenshots": "max_screenshots",
-            "timeout": "timeout_ms",
-        },
-        "switches": {
-            "skip-assets": "skip_assets",
-        },
-        "cwd_key": None,
-        "timeout": 180,
-    },
-    "transcribe": {
-        "subcommand": "transcribe",
-        "positional": ["input_path"],
-        "fixed": ["--json"],
-        "flags": {
-            "dir": "project_path",
-            "model": "model",
-            "language": "language",
-        },
-        "cwd_key": None,
-        "timeout": 600,
-    },
-    "tts": {
-        "subcommand": "tts",
-        "positional": ["text_or_file"],
-        "fixed": ["--json"],
-        "flags": {
-            "output": "output_path",
-            "voice": "voice",
-            "speed": "speed",
-            "lang": "language",
-        },
-        "switches": {
-            "list": "list_voices",
-        },
-        "cwd_key": None,
-        "timeout": 600,
-    },
-    "remove-background": {
-        "subcommand": "remove-background",
-        "positional": ["input_path"],
-        "fixed": ["--json"],
-        "flags": {
-            "output": "output_path",
-            "background-output": "background_output_path",
-            "device": "device",
-            "quality": "quality",
-        },
-        "switches": {
-            "info": "info",
-        },
-        "cwd_key": None,
-        "timeout": 900,
-    },
-    "doctor": {
-        "subcommand": "doctor",
-        "fixed": ["--json"],
-        "cwd_key": None,
-        "timeout": 60,
-    },
-    "benchmark": {
-        "subcommand": "benchmark",
-        "positional": ["project_path"],
-        "switches": {
-            "json": "json_output",
-        },
-        "flags": {
-            "output": "output_path",
-        },
-        "timeout": 900,
     },
     "add": {
         "subcommand": "add",
@@ -315,21 +188,18 @@ def _hyperframes_op(
     _require_hyperframes_deps()
 
     cwd_key = spec.get("cwd_key", "project_path")
-    if cwd_key is None:
-        cwd = Path(kwargs.get("cwd") or os.getcwd()).resolve()
-    else:
-        cwd_val = kwargs.get(cwd_key)
-        if cwd_val is None:
-            raise MCPVideoError(
-                f"Missing required parameter: {cwd_key}",
-                error_type="validation_error",
-                code="invalid_parameter",
-            )
+    cwd_val = kwargs.get(cwd_key)
+    if cwd_val is None:
+        raise MCPVideoError(
+            f"Missing required parameter: {cwd_key}",
+            error_type="validation_error",
+            code="invalid_parameter",
+        )
 
-        if cwd_key == "project_path":
-            cwd, _entry_point = _validate_project(cwd_val)
-        else:
-            cwd = Path(cwd_val).resolve()
+    if cwd_key == "project_path":
+        cwd, _entry_point = _validate_project(cwd_val)
+    else:
+        cwd = Path(cwd_val).resolve()
 
     args: list[str] = [spec["subcommand"]]
 
@@ -347,10 +217,6 @@ def _hyperframes_op(
         val = kwargs.get(kw_key)
         if val is not None:
             args.extend([f"--{flag}", str(val)])
-
-    for flag, kw_key in spec.get("switches", {}).items():
-        if kwargs.get(kw_key):
-            args.append(f"--{flag}")
 
     for item in spec.get("fixed", []):
         args.append(item)
@@ -378,37 +244,6 @@ def _post_process_ops() -> dict[str, Callable]:
         "fade": _video_engine.fade,
         "watermark": _video_engine.watermark,
     }
-
-
-def _parse_json_stdout(stdout: str) -> dict[str, Any] | list[Any] | str:
-    """Parse Hyperframes JSON output, preserving text when a command is human-only."""
-    text = stdout.strip()
-    if not text:
-        return {}
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        return text
-
-
-def _csv(values: list[float] | list[str] | None) -> str | None:
-    if not values:
-        return None
-    return ",".join(str(v) for v in values)
-
-
-def _snapshot_pngs(project: Path, before: set[Path]) -> list[str]:
-    snapshot_dir = project / "snapshots"
-    if not snapshot_dir.is_dir():
-        return []
-    after = set(snapshot_dir.glob("*.png"))
-    created = after - before
-    paths = sorted(created or after)
-    return [str(path) for path in paths]
-
-
-def _json_result(command: str, result: subprocess.CompletedProcess[str]) -> HyperframesJsonResult:
-    return HyperframesJsonResult(command=command, data=_parse_json_stdout(result.stdout), stdout=result.stdout)
 
 
 # ---------------------------------------------------------------------------
@@ -456,24 +291,14 @@ def render(
         format=format,
         workers=workers,
         crf=crf,
-        video_bitrate=video_bitrate,
-        variables=variables,
-        variables_file=variables_file,
-        docker=docker,
-        hdr=hdr,
-        sdr=sdr,
-        gpu=gpu,
-        browser_gpu=browser_gpu,
-        no_browser_gpu=no_browser_gpu,
-        quiet=quiet,
-        strict=strict,
-        strict_all=strict_all,
-        max_concurrent_renders=max_concurrent_renders,
-        strict_variables=strict_variables,
     )
 
     render_time = round(time.time() - start_time, 1)
-    size_mb = round(os.path.getsize(output_path) / (1024 * 1024), 2) if os.path.isfile(output_path) else None
+    try:
+        size = os.path.getsize(output_path) if os.path.isfile(output_path) else None
+        size_mb = round(size / (1024 * 1024), 2) if size is not None else None
+    except OSError:
+        size_mb = None
 
     resolution = None
     if width and height:
@@ -563,22 +388,24 @@ def preview(
     startup_timeout: int = 10,
 ) -> HyperframesPreviewResult:
     """Launch Hyperframes preview studio (non-blocking)."""
+    if port < 1024 or port > 65535:
+        raise HyperframesProjectError(str(project_path), "Preview port must be between 1024 and 65535")
     _require_hyperframes_deps()
     project, _entry_point = _validate_project(project_path)
 
-    cmd = ["npx", "hyperframes", "preview", str(project), "--port", str(port)]
+    cmd = ["npx", "--yes", "--no-install", "hyperframes", "preview", str(project), "--port", str(port)]
     proc = subprocess.Popen(
         cmd,
         cwd=str(project),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
         text=True,
+        start_new_session=True,
     )
 
     time.sleep(min(startup_timeout, 2))
     if proc.poll() is not None:
-        stderr = proc.stderr.read() if proc.stderr else ""
-        raise HyperframesProjectError(f"Hyperframes preview exited immediately. stderr: {stderr[:500]}")
+        raise HyperframesProjectError(str(project), "Hyperframes preview exited immediately")
 
     return HyperframesPreviewResult(
         url=f"http://localhost:{port}",
@@ -593,15 +420,12 @@ def still(
     output_path: str | None = None,
     frame: int = 0,
 ) -> HyperframesStillResult:
-    """Render a single frame from a Hyperframes composition.
+    """Render a single frame from a Hyperframes composition."""
+    if output_path is None:
+        os.makedirs("out", exist_ok=True)
+        output_path = os.path.join("out", f"{Path(project_path).name}_frame{frame}.png")
 
-    Hyperframes 0.5 writes snapshot PNGs into the project ``snapshots/``
-    directory and does not accept an output file flag. Return the actual
-    generated frame path instead of echoing a requested-but-unwritten path.
-    """
-    seconds = frame / 30.0
-    snap = snapshot(project_path, at=[seconds], frames=1)
-    actual_output = snap.frame_paths[0] if snap.frame_paths else output_path or ""
+    _hyperframes_op("snapshot", project_path=project_path, frame=frame)
 
     return HyperframesStillResult(
         output_path=actual_output,
