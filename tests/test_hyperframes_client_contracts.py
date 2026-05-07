@@ -23,6 +23,14 @@ def test_client_inspect_exposes_new_hyperframes_methods():
         assert metadata["category"] in {"media", "report"}
 
 
+def test_client_hyperframes_tts_allows_voice_listing_without_text():
+    client = Client()
+
+    metadata = client.inspect("hyperframes_tts")
+
+    assert metadata["parameters"]["text_or_file"] == "str | None"
+
+
 def test_client_inspect_exposes_repurpose_methods():
     client = Client()
 

@@ -247,16 +247,18 @@ def hyperframes_capture(
 @mcp.tool()
 @_safe_tool
 def hyperframes_tts(
-    text_or_file: str,
+    text_or_file: str | None = None,
     output_path: str | None = None,
     voice: str | None = None,
     speed: float | None = None,
     language: str | None = None,
     list_voices: bool = False,
 ) -> dict[str, Any]:
-    """Generate speech audio using Hyperframes local TTS."""
+    """Generate speech audio or list available Hyperframes local TTS voices."""
     if speed is not None and speed <= 0:
         return _validation_error(f"speed must be positive, got {speed}")
+    if not list_voices and not text_or_file:
+        return _validation_error("text_or_file is required unless list_voices is true")
     from .hyperframes_engine import tts
 
     return _result(

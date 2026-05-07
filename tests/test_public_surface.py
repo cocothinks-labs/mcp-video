@@ -259,6 +259,16 @@ def test_server_tool_registry_keeps_public_tool_names():
     assert len(tool_names) == 103
 
 
+def test_hyperframes_tts_schema_can_list_voices_without_text():
+    from mcp_video.server import mcp
+
+    tools = {tool.name: tool for tool in asyncio.run(mcp.list_tools())}
+    schema = tools["hyperframes_tts"].inputSchema
+
+    assert "list_voices" in schema["properties"]
+    assert "text_or_file" not in schema.get("required", [])
+
+
 def test_stdio_server_launches_and_lists_tools_like_registry_clients():
     """Exercise the package the way registries launch it: stdio subprocess + MCP handshake."""
 

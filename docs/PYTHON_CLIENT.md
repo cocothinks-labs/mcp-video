@@ -233,7 +233,7 @@ print(checkpoint["quality_score"])  # Must pass min_score
 | `hyperframes_info(project_path)` | `HyperframesJsonResult` | Read project metadata |
 | `hyperframes_catalog(item_type?, tag?)` | `HyperframesJsonResult` | Browse blocks/components |
 | `hyperframes_capture(url, output?)` | `HyperframesJsonResult` | Capture a website as editable components |
-| `hyperframes_tts(text_or_file, output?)` | `HyperframesJsonResult` | Generate local speech audio |
+| `hyperframes_tts(text_or_file?, output?, list_voices?)` | `HyperframesJsonResult` | Generate local speech audio or list available voices |
 | `hyperframes_transcribe(input_path, project_path?, model?, language?)` | `HyperframesJsonResult` | Transcribe media/import transcripts |
 | `hyperframes_remove_background(input_path, output?)` | `HyperframesJsonResult` | Produce transparent cutout media |
 | `hyperframes_doctor()` | `HyperframesJsonResult` | Run Hyperframes diagnostics |

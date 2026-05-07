@@ -114,7 +114,7 @@ Create videos programmatically using [Hyperframes](https://hyperframes.io/) — 
 | `hyperframes_info` | Read project metadata |
 | `hyperframes_catalog` | Browse catalog blocks/components, including social overlays and caption styles |
 | `hyperframes_capture` | Capture a website as editable Hyperframes components |
-| `hyperframes_tts` | Generate speech audio with local Hyperframes TTS |
+| `hyperframes_tts` | Generate speech audio with local Hyperframes TTS or list available voices |
 | `hyperframes_transcribe` | Transcribe media to word-level timestamps or import transcripts |
 | `hyperframes_remove_background` | Remove image/video backgrounds to transparent media |
 | `hyperframes_doctor` | Run Hyperframes environment diagnostics |

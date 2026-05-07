@@ -627,6 +627,27 @@ class TestHyperframes05Tools:
         assert _hyperframes_subcommand(mock_run.call_args_list[0][0][0]) == "tts"
         assert _hyperframes_subcommand(mock_run.call_args_list[1][0][0]) == "transcribe"
 
+    def test_tts_list_voices_does_not_require_text(self):
+        payload = json.dumps({"voices": [{"id": "af_heart"}]})
+
+        with (
+            _mock_deps_ok(),
+            patch(
+                "mcp_video.hyperframes_engine.subprocess.run", return_value=_make_completed_process(stdout=payload)
+            ) as mock_run,
+        ):
+            result = tts(list_voices=True)
+
+        assert result.data["voices"][0]["id"] == "af_heart"
+        cmd = mock_run.call_args[0][0]
+        assert _hyperframes_subcommand(cmd) == "tts"
+        assert "--list" in cmd
+        assert "" not in cmd
+
+    def test_tts_requires_text_unless_listing_voices(self):
+        with pytest.raises(MCPVideoError, match="text_or_file is required"):
+            tts()
+
     def test_remove_background_doctor_info_and_benchmark(self, sample_hyperframes_project):
         responses = [
             _make_completed_process(stdout=json.dumps({"output": "/tmp/cutout.webm"})),

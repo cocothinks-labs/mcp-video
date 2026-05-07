@@ -221,7 +221,7 @@ _SCHEMA: dict[str, dict[str, Any]] = {
     },
     "tts": {
         "subcommand": "tts",
-        "positional": ["text_or_file"],
+        "optional_positional": ["text_or_file"],
         "fixed": ["--json"],
         "flags": {
             "output": "output_path",
@@ -342,6 +342,11 @@ def _hyperframes_op(
                 code="invalid_parameter",
             )
         args.append(str(val))
+
+    for pos_key in spec.get("optional_positional", []):
+        val = kwargs.get(pos_key)
+        if val:
+            args.append(str(val))
 
     for flag, kw_key in spec.get("flags", {}).items():
         val = kwargs.get(kw_key)
@@ -727,9 +732,15 @@ def tts(
     list_voices: bool = False,
 ) -> HyperframesJsonResult:
     """Generate speech audio from text using Hyperframes local TTS."""
+    if not list_voices and not text_or_file:
+        raise MCPVideoError(
+            "text_or_file is required unless list_voices is true",
+            error_type="validation_error",
+            code="invalid_parameter",
+        )
     result, _cwd = _hyperframes_op(
         "tts",
-        text_or_file=text_or_file or "",
+        text_or_file=text_or_file,
         output_path=output_path,
         voice=voice,
         speed=speed,

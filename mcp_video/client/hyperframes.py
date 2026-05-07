@@ -126,14 +126,14 @@ class ClientHyperframesMixin:
 
     def hyperframes_tts(
         self,
-        text_or_file: str,
+        text_or_file: str | None = None,
         output: str | None = None,
         voice: str | None = None,
         speed: float | None = None,
         language: str | None = None,
         list_voices: bool = False,
     ) -> dict:
-        """Generate local speech audio with Hyperframes TTS."""
+        """Generate local speech audio or list available Hyperframes TTS voices."""
         from ..hyperframes_engine import tts
 
         return tts(
