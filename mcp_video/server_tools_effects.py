@@ -378,6 +378,8 @@ def video_text_animated(
     Returns:
         Dict with success status and output_path.
     """
+    if not text or not text.strip():
+        raise MCPVideoError("Text cannot be empty", error_type="validation_error", code="invalid_parameter")
     if animation not in VALID_TEXT_ANIMATIONS:
         raise MCPVideoError(
             f"animation must be one of {sorted(VALID_TEXT_ANIMATIONS)}, got {animation}",
