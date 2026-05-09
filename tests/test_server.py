@@ -754,6 +754,11 @@ class TestServerValidationFormat:
         assert result["success"] is False
         assert "format" in result["error"]["message"].lower()
 
+    def test_convert_rejects_bad_quality(self, sample_video):
+        result = video_convert(sample_video, quality="medium-rare")
+        assert result["success"] is False
+        assert "quality" in result["error"]["message"].lower()
+
     def test_extract_audio_rejects_bad_format(self, sample_video):
         result = video_extract_audio(sample_video, format="exe")
         assert result["success"] is False

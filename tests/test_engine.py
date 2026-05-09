@@ -471,6 +471,30 @@ class TestDeinterlaceFilter:
         assert os.path.isfile(result.output_path)
 
 
+class TestConvertValidation:
+    def test_convert_rejects_invalid_quality_before_probe(self, sample_video, monkeypatch):
+        from mcp_video import engine_convert
+        from mcp_video.errors import MCPVideoError
+
+        monkeypatch.setattr(
+            engine_convert, "probe", lambda _path: (_ for _ in ()).throw(AssertionError("probe should not run"))
+        )
+
+        with pytest.raises(MCPVideoError, match="quality"):
+            engine_convert.convert(sample_video, format="mp4", quality="medium-rare")
+
+    def test_convert_rejects_invalid_format_before_probe(self, sample_video, monkeypatch):
+        from mcp_video import engine_convert
+        from mcp_video.errors import MCPVideoError
+
+        monkeypatch.setattr(
+            engine_convert, "probe", lambda _path: (_ for _ in ()).throw(AssertionError("probe should not run"))
+        )
+
+        with pytest.raises(MCPVideoError, match="format"):
+            engine_convert.convert(sample_video, format="exe", quality="high")
+
+
 class TestGifQualityScaling:
     def test_gif_low_quality_is_smaller(self, sample_video):
         low = convert(sample_video, format="gif", quality="low")
