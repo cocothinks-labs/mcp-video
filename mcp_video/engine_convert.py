@@ -42,6 +42,20 @@ def convert(
     """
     input_path = _validate_input_path(input_path)
 
+    valid_formats = {"mp4", "webm", "gif", "mov", "hevc", "av1", "prores"}
+    if format not in valid_formats:
+        raise MCPVideoError(
+            f"format must be one of {sorted(valid_formats)}, got {format}",
+            error_type="validation_error",
+            code="invalid_parameter",
+        )
+    if quality not in QUALITY_PRESETS:
+        raise MCPVideoError(
+            f"quality must be one of {sorted(QUALITY_PRESETS)}, got {quality}",
+            error_type="validation_error",
+            code="invalid_parameter",
+        )
+
     if two_pass and format not in ("mp4", "mov"):
         raise MCPVideoError(
             f"Two-pass encoding is only supported for mp4 and mov formats, got '{format}'",

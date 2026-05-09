@@ -8,6 +8,7 @@ from .engine import add_audio, add_text, convert, merge, probe, resize, speed, t
 from .limits import MAX_RESOLUTION, MAX_SPEED_FACTOR, MIN_SPEED_FACTOR, MIN_CRF, MAX_CRF
 from .server_app import _result, _safe_tool, _validation_error, mcp
 from .validation import VALID_FORMATS, VALID_PRESETS
+from .models import QUALITY_PRESETS
 from .ffmpeg_helpers import _validate_input_path
 
 
@@ -287,6 +288,8 @@ def video_convert(
     """
     if format not in VALID_FORMATS:
         return _validation_error(f"Invalid format: {format}. Must be one of {sorted(VALID_FORMATS)}")
+    if quality not in QUALITY_PRESETS:
+        return _validation_error(f"Invalid quality: {quality}. Must be one of {sorted(QUALITY_PRESETS)}")
     input_path = _validate_input_path(input_path)
     return _result(
         convert(
