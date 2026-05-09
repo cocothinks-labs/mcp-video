@@ -442,6 +442,9 @@ def text_animated(
     Returns:
         Path to output video
     """
+    if not text or not text.strip():
+        raise MCPVideoError("Text cannot be empty", error_type="validation_error", code="invalid_parameter")
+
     video = _validate_input_path(video)
     _validate_output_path(output)
 

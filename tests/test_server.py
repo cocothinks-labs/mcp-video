@@ -191,6 +191,12 @@ class TestVideoTextAnimatedTool:
         assert result["success"] is False
         assert "animation" in result["error"]["message"]
 
+    def test_rejects_empty_text_before_input_validation(self):
+        result = video_text_animated("/tmp/missing.mp4", text="   ")
+
+        assert result["success"] is False
+        assert "Text cannot be empty" in result["error"]["message"]
+
 
 class TestVideoAddAudioTool:
     def test_returns_success(self, sample_video, sample_audio):
