@@ -736,6 +736,31 @@ class TestCompositions:
         assert comp.height == 1920
         assert comp.duration_in_frames == 150
 
+    def test_sanitizes_html_width_height_metadata(self, sample_hyperframes_project):
+        """HTML dimensions should accept pixel-like integers and ignore invalid values."""
+        project_path = Path(sample_hyperframes_project)
+        (project_path / "index.html").write_text(
+            '<div data-composition-id="main" data-width="1080px" data-height="1920.0"></div>'
+            '<div data-composition-id="bad" data-width="wide" data-height="tall"></div>',
+            encoding="utf-8",
+        )
+        comp_json = json.dumps(
+            [
+                {"id": "main", "durationInFrames": 1},
+                {"id": "bad", "durationInFrames": 1},
+            ]
+        )
+        fake_cp = _make_completed_process(stdout=comp_json)
+
+        with _mock_deps_ok(), patch("mcp_video.hyperframes_engine.subprocess.run", return_value=fake_cp):
+            result = compositions(str(project_path))
+
+        main, bad = result.compositions
+        assert main.width == 1080
+        assert main.height == 1920
+        assert bad.width == 1920
+        assert bad.height == 1080
+
     def test_handles_invalid_json(self, sample_hyperframes_project):
         """compositions() should return empty list when JSON is invalid."""
         project = str(sample_hyperframes_project)

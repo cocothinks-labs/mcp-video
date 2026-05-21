@@ -773,9 +773,9 @@ def _composition_html_metadata(project: Path) -> dict[str, dict[str, Any]]:
                 item["_html_duration"] = duration
             if fps := attrs.get("data-fps"):
                 item["_html_fps"] = fps
-            if width := attrs.get("data-width"):
+            if width := _coerce_positive_int(attrs.get("data-width")):
                 item["_html_width"] = width
-            if height := attrs.get("data-height"):
+            if height := _coerce_positive_int(attrs.get("data-height")):
                 item["_html_height"] = height
             if item:
                 metadata[comp_id] = {**metadata.get(comp_id, {}), **item}
@@ -792,6 +792,20 @@ def _coerce_positive_float(value: Any) -> float | None:
     number = _coerce_float(value)
     if number and number > 0:
         return number
+    return None
+
+
+def _coerce_positive_int(value: Any) -> int | None:
+    if isinstance(value, str):
+        value = value.strip()
+        if value.lower().endswith("px"):
+            value = value[:-2].strip()
+    number = _coerce_float(value)
+    if number is None:
+        return None
+    integer = int(number)
+    if integer > 0 and float(integer) == float(number):
+        return integer
     return None
 
 
