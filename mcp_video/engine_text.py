@@ -25,7 +25,7 @@ from .ffmpeg_helpers import (
 from .validation import (
     _validate_color,
 )
-from .ffmpeg_helpers import _validate_input_path, _validate_output_path, _escape_ffmpeg_filter_value
+from .ffmpeg_helpers import _escape_ffmpeg_filter_value, _validate_input_path, _validate_output_path
 from .models import EditResult, Position
 from .design_guardrails import (
     validate_single_text,
@@ -208,12 +208,14 @@ def add_texts(
                 error_type="validation_error",
                 code="invalid_parameter",
             )
+        color = t.get("color", "white")
+        _validate_color(color)
         overlays.append(
             TextOverlaySpec(
                 text=text,
                 position=t.get("position", "center"),
                 size=t.get("size", 48),
-                color=t.get("color", "white"),
+                color=color,
                 shadow=t.get("shadow", True),
                 start_time=t.get("start_time"),
                 duration=t.get("duration"),
