@@ -11,6 +11,10 @@ This project follows a simple release-note style:
 
 ## Unreleased
 
+### Changed
+
+- Glitch tools (`glitch_rgb_shift`, `glitch_scanline_jitter`, `glitch_screen_tearing`, `glitch_vhs_tracking`, `glitch_macroblocking`, `glitch_datamoshing`, `glitch_cmyk_split`, `glitch_turbulent_displacement`) now return rich edit metadata in their MCP responses — `duration`, `resolution`, `size_mb`, and `elapsed_ms` — matching the envelope shape of all other edit tools. Previously these tools returned only `success` and `output_path`.
+
 ### Fixed
 
 - Removed BasicPitch from declared optional extras and documented it as a manual integration so Dependabot can patch vulnerable TensorFlow/Keras/protobuf transitive dependencies instead of resolving an unsafe pinned stack.

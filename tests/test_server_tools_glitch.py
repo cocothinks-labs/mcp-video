@@ -50,6 +50,18 @@ class TestGlitchRgbShiftTool:
         assert os.path.isfile(result["output_path"])
 
     @pytest.mark.slow
+    def test_rich_metadata_fields(self, sample_video, tmp_path):
+        out = str(tmp_path / "rgb_shift_rich.mp4")
+        result = glitch_rgb_shift(sample_video, output_path=out, amount=5.0)
+        assert result["success"] is True
+        assert "duration" in result
+        assert "resolution" in result
+        assert "size_mb" in result
+        assert "elapsed_ms" in result
+        assert result["elapsed_ms"] is not None
+        assert result["elapsed_ms"] > 0
+
+    @pytest.mark.slow
     def test_auto_output_path(self, sample_video):
         result = glitch_rgb_shift(sample_video, amount=3.0)
         assert result["success"] is True
@@ -89,6 +101,16 @@ class TestGlitchScanlineJitterTool:
         assert result["success"] is True
         assert os.path.isfile(result["output_path"])
 
+    @pytest.mark.slow
+    def test_rich_metadata_fields(self, sample_video, tmp_path):
+        out = str(tmp_path / "scanline_rich.mp4")
+        result = glitch_scanline_jitter(sample_video, output_path=out)
+        assert result["success"] is True
+        assert "duration" in result
+        assert "elapsed_ms" in result
+        assert result["elapsed_ms"] is not None
+        assert result["elapsed_ms"] > 0
+
 
 # ---------------------------------------------------------------------------
 # glitch_screen_tearing
@@ -114,6 +136,16 @@ class TestGlitchScreenTearingTool:
         result = glitch_screen_tearing(sample_video, output_path=out, tear_count=2, offset_range=30.0)
         assert result["success"] is True
         assert os.path.isfile(result["output_path"])
+
+    @pytest.mark.slow
+    def test_rich_metadata_fields(self, sample_video, tmp_path):
+        out = str(tmp_path / "tearing_rich.mp4")
+        result = glitch_screen_tearing(sample_video, output_path=out)
+        assert result["success"] is True
+        assert "duration" in result
+        assert "elapsed_ms" in result
+        assert result["elapsed_ms"] is not None
+        assert result["elapsed_ms"] > 0
 
 
 # ---------------------------------------------------------------------------
@@ -148,6 +180,16 @@ class TestGlitchVhsTrackingTool:
         result = glitch_vhs_tracking(sample_video, output_path=out, tracking=0.3, noise_amount=0.01)
         assert result["success"] is True
         assert os.path.isfile(result["output_path"])
+
+    @pytest.mark.slow
+    def test_rich_metadata_fields(self, sample_video, tmp_path):
+        out = str(tmp_path / "vhs_rich.mp4")
+        result = glitch_vhs_tracking(sample_video, output_path=out)
+        assert result["success"] is True
+        assert "duration" in result
+        assert "elapsed_ms" in result
+        assert result["elapsed_ms"] is not None
+        assert result["elapsed_ms"] > 0
 
 
 # ---------------------------------------------------------------------------
@@ -187,6 +229,18 @@ class TestGlitchMacroblockingTool:
         assert result["success"] is True
         assert os.path.isfile(result["output_path"])
 
+    @pytest.mark.slow
+    def test_rich_metadata_fields(self, sample_video, tmp_path):
+        out = str(tmp_path / "macro_rich.mp4")
+        result = glitch_macroblocking(sample_video, output_path=out)
+        assert result["success"] is True
+        assert "duration" in result
+        assert "resolution" in result
+        assert "size_mb" in result
+        assert "elapsed_ms" in result
+        assert result["elapsed_ms"] is not None
+        assert result["elapsed_ms"] > 0
+
 
 # ---------------------------------------------------------------------------
 # glitch_datamoshing
@@ -212,6 +266,16 @@ class TestGlitchDatamoshingTool:
         result = glitch_datamoshing(sample_video, output_path=out, drift=10.0, iframe_interval=15)
         assert result["success"] is True
         assert os.path.isfile(result["output_path"])
+
+    @pytest.mark.slow
+    def test_rich_metadata_fields(self, sample_video, tmp_path):
+        out = str(tmp_path / "datamosh_rich.mp4")
+        result = glitch_datamoshing(sample_video, output_path=out)
+        assert result["success"] is True
+        assert "duration" in result
+        assert "elapsed_ms" in result
+        assert result["elapsed_ms"] is not None
+        assert result["elapsed_ms"] > 0
 
 
 # ---------------------------------------------------------------------------
@@ -243,6 +307,16 @@ class TestGlitchCmykSplitTool:
         assert result["success"] is True
         assert os.path.isfile(result["output_path"])
 
+    @pytest.mark.slow
+    def test_rich_metadata_fields(self, sample_video, tmp_path):
+        out = str(tmp_path / "cmyk_rich.mp4")
+        result = glitch_cmyk_split(sample_video, output_path=out)
+        assert result["success"] is True
+        assert "duration" in result
+        assert "elapsed_ms" in result
+        assert result["elapsed_ms"] is not None
+        assert result["elapsed_ms"] > 0
+
 
 # ---------------------------------------------------------------------------
 # glitch_turbulent_displacement
@@ -272,3 +346,15 @@ class TestGlitchTurbulentDisplacementTool:
         result = glitch_turbulent_displacement(sample_video, output_path=out, amount=10.0, octaves=2)
         assert result["success"] is True
         assert os.path.isfile(result["output_path"])
+
+    @pytest.mark.slow
+    def test_rich_metadata_fields(self, sample_video, tmp_path):
+        out = str(tmp_path / "turbulent_rich.mp4")
+        result = glitch_turbulent_displacement(sample_video, output_path=out, octaves=1)
+        assert result["success"] is True
+        assert "duration" in result
+        assert "resolution" in result
+        assert "size_mb" in result
+        assert "elapsed_ms" in result
+        assert result["elapsed_ms"] is not None
+        assert result["elapsed_ms"] > 0
