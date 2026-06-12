@@ -10,6 +10,8 @@ on:
       - "uv.lock"
       - ".github/workflows/pr-safety.yml"
 
+timeout-minutes: 30
+
 jobs:
   hosted-pr-checks:
     name: Hosted PR checks

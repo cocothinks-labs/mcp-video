@@ -56,3 +56,5 @@ glama-score*.png
 # Coverage data
 .coverage
 
+*.log
+*.pyc

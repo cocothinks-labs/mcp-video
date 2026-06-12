@@ -11,6 +11,8 @@ concurrency:
   group: publish-${{ github.event.release.tag_name }}
   cancel-in-progress: false
 
+timeout-minutes: 30
+
 jobs:
   surface-audit:
     name: Check tracked release surface

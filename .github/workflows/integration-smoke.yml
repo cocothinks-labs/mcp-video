@@ -15,6 +15,8 @@ concurrency:
   group: integration-smoke-${{ github.ref }}
   cancel-in-progress: true
 
+timeout-minutes: 30
+
 jobs:
   base-cli-and-doctor:
     name: Base CLI and doctor
