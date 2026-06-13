@@ -4,7 +4,10 @@ on:
   pull_request:
 jobs:
   test:
-    runs-on: docker
+    # docker-egress is served only by runners with verified container egress;
+    # the shared `docker` label includes a runner whose containers currently
+    # cannot reach apt/pip mirrors (NUCBox, diagnosed 2026-06-12).
+    runs-on: docker-egress
     steps:
       - uses: actions/checkout@v4
       - name: Install system dependencies
