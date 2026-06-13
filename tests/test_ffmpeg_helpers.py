@@ -92,7 +92,7 @@ def test_run_ffmpeg_prepends_runtime_binary_for_raw_args(monkeypatch):
     def fake_ffmpeg():
         return "/custom/ffmpeg"
 
-    def fake_run(cmd, capture_output, text, timeout):
+    def fake_run(cmd, capture_output, text, timeout, **kwargs):
         captured["cmd"] = cmd
         return subprocess.CompletedProcess(cmd, 0, "", "")
 

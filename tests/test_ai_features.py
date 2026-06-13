@@ -511,7 +511,7 @@ def test_ai_scene_detect_caps_ai_frame_extraction_rate(tmp_path, monkeypatch):
 
     seen_cmds = []
 
-    def fake_run(cmd, capture_output, text, timeout):
+    def fake_run(cmd, capture_output, text, timeout, **kwargs):
         seen_cmds.append(cmd)
         return subprocess.CompletedProcess(cmd, 0, "", "")
 
@@ -559,7 +559,7 @@ def test_ai_scene_detect_ai_mode_returns_json_safe_hash_diffs(tmp_path, monkeypa
     monkeypatch.setitem(sys.modules, "PIL.Image", image_module)
     monkeypatch.setattr("mcp_video.ai_engine.scene._run_ffprobe_json", lambda _path: {"format": {"duration": "1"}})
 
-    def fake_run(cmd, capture_output, text, timeout):
+    def fake_run(cmd, capture_output, text, timeout, **kwargs):
         frame_pattern = Path(cmd[-1])
         frame_pattern.parent.mkdir(parents=True, exist_ok=True)
         (frame_pattern.parent / "frame_0001.jpg").write_bytes(b"one")
@@ -688,7 +688,7 @@ class TestColorGrade:
 
         from mcp_video.ai_engine.color import _match_reference_colors
 
-        def fake_run(cmd, capture_output, text, timeout):
+        def fake_run(cmd, capture_output, text, timeout, **kwargs):
             return subprocess.CompletedProcess(cmd, 1, "", "signalstats unavailable")
 
         monkeypatch.setattr(subprocess, "run", fake_run)
