@@ -11,6 +11,10 @@ This project follows a simple release-note style:
 
 ## Unreleased
 
+### Removed
+
+- The opt-in anonymous analytics ping (`MCP_VIDEO_ANALYTICS=1`). The endpoint it posted to was never deployed or owned by the project, making the domain claimable by a third party — removed entirely rather than left as a silent no-op.
+
 ### Added
 
 - `video_duck_audio` (tool #120): mix background music under a video's voice with automatic sidechain ducking — the music dips during speech and recovers in pauses. Engine function `duck_audio` with validated `music_volume`, `threshold`, `ratio`, `attack`, and `release` parameters.

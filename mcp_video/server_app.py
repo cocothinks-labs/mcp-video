@@ -24,14 +24,6 @@ mcp = FastMCP(
     ),
 )
 
-# Optional anonymous usage ping (enabled only via MCP_VIDEO_ANALYTICS=1)
-try:
-    from .analytics import ping
-
-    ping(event="server_start")
-except Exception:  # noqa: S110
-    pass
-
 logger = logging.getLogger(__name__)
 
 
